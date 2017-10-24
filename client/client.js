@@ -5,6 +5,7 @@ let canvas;
 let ctx;
 
 let updated = false;
+let jumped = false;
 let hash;
 let players = {};
 
@@ -15,6 +16,7 @@ const myKeys = {
     KEY_A: 65,
     KEY_S: 83,
     KEY_D: 68,
+    KEY_SPACE: 32,
   },
   keydown: [],
 };
@@ -31,31 +33,24 @@ const lerpPos = (pos0, pos1, alpha) => ({
 const updateMovement = () => {
   const user = players[hash];
   updated = false;
+  jumped = false;
 
   user.prevPos = user.pos;
 
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true) {
-    user.destPos.y += -2;
-    updated = true;
-  }
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true) {
+  if (myKeys.keydown[myKeys.KEYBOARD.KEY_A]) {
     user.destPos.x += -2;
     updated = true;
   }
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true) {
-    user.destPos.y += 2;
-    updated = true;
-  }
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true) {
+  if (myKeys.keydown[myKeys.KEYBOARD.KEY_D]) {
     user.destPos.x += 2;
     updated = true;
   }
+  if (myKeys.keydown[myKeys.KEYBOARD.KEY_SPACE] && user.grounded) {
+    jumped = true;
+    updated = true;
+  }
 
-  // prevent player from going out of bound
-  user.destPos.x = clamp(user.destPos.x, 0, 500 - user.width);
-  user.destPos.y = clamp(user.destPos.y, 0, 500 - user.height);
-
-  user.alpha = 0.05;
+  user.alpha = updated ? 0.05 : user.alpha;
 
   // if this client's user moves or is falling from gravity - send to server to update server
   if (updated === true || !user.grounded) {
@@ -64,6 +59,7 @@ const updateMovement = () => {
       prevPos: user.prevPos,
       destPos: user.destPos,
       alpha: user.alpha,
+      jump: jumped,
     });
   }
 };
@@ -76,7 +72,14 @@ const drawPlayers = () => {
     const player = players[keys[i]];
 
     // lerp players
-    if (player.alpha < 1) player.alpha += 0.05;
+    if (player.alpha < 1) {
+      player.alpha += 0.05;
+      // console.log(player.alpha);
+    }
+
+    // prevent player from going out of bound
+    player.pos.x = clamp(player.pos.x, 0, 500 - player.width);
+    player.pos.y = clamp(player.pos.y, 0, 500 - player.height);
 
     player.pos = lerpPos(player.prevPos, player.destPos, player.alpha);
 
@@ -122,6 +125,7 @@ const update = (data) => {
       player.lastUpdate = updatePlayer.lastUpdate;
       player.prevPos = updatePlayer.prevPos;
       player.destPos = updatePlayer.destPos;
+      player.grounded = updatePlayer.grounded;
       player.alpha = 0.05;
 
       if (keys[i] !== hash) {
@@ -158,11 +162,17 @@ const init = () => {
   // event listeners
   window.addEventListener('keydown', (e) => {
     // console.log(`keydown: ${e.keyCode}`);
+
+    // prevent spacebar's scroll down function
+    if (e.keyCode === myKeys.KEYBOARD.KEY_SPACE) e.preventDefault();
     myKeys.keydown[e.keyCode] = true;
   });
 
   window.addEventListener('keyup', (e) => {
     // console.log(`keyup: ${e.keyCode}`);
+
+    // prevent spacebar's scroll down function
+    if (e.keyCode === myKeys.KEYBOARD.KEY_SPACE) e.preventDefault();
     myKeys.keydown[e.keyCode] = false;
   });
 };

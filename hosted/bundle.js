@@ -7,6 +7,7 @@ var canvas = void 0;
 var ctx = void 0;
 
 var updated = false;
+var jumped = false;
 var hash = void 0;
 var players = {};
 
@@ -16,7 +17,8 @@ var myKeys = {
     KEY_W: 87,
     KEY_A: 65,
     KEY_S: 83,
-    KEY_D: 68
+    KEY_D: 68,
+    KEY_SPACE: 32
   },
   keydown: []
 };
@@ -37,31 +39,24 @@ var lerpPos = function lerpPos(pos0, pos1, alpha) {
 var updateMovement = function updateMovement() {
   var user = players[hash];
   updated = false;
+  jumped = false;
 
   user.prevPos = user.pos;
 
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true) {
-    user.destPos.y += -2;
-    updated = true;
-  }
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true) {
+  if (myKeys.keydown[myKeys.KEYBOARD.KEY_A]) {
     user.destPos.x += -2;
     updated = true;
   }
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true) {
-    user.destPos.y += 2;
-    updated = true;
-  }
-  if (myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true) {
+  if (myKeys.keydown[myKeys.KEYBOARD.KEY_D]) {
     user.destPos.x += 2;
     updated = true;
   }
+  if (myKeys.keydown[myKeys.KEYBOARD.KEY_SPACE] && user.grounded) {
+    jumped = true;
+    updated = true;
+  }
 
-  // prevent player from going out of bound
-  user.destPos.x = clamp(user.destPos.x, 0, 500 - user.width);
-  user.destPos.y = clamp(user.destPos.y, 0, 500 - user.height);
-
-  user.alpha = 0.05;
+  user.alpha = updated ? 0.05 : user.alpha;
 
   // if this client's user moves or is falling from gravity - send to server to update server
   if (updated === true || !user.grounded) {
@@ -69,7 +64,8 @@ var updateMovement = function updateMovement() {
       pos: user.pos,
       prevPos: user.prevPos,
       destPos: user.destPos,
-      alpha: user.alpha
+      alpha: user.alpha,
+      jump: jumped
     });
   }
 };
@@ -82,7 +78,14 @@ var drawPlayers = function drawPlayers() {
     var player = players[keys[i]];
 
     // lerp players
-    if (player.alpha < 1) player.alpha += 0.05;
+    if (player.alpha < 1) {
+      player.alpha += 0.05;
+      // console.log(player.alpha);
+    }
+
+    // prevent player from going out of bound
+    player.pos.x = clamp(player.pos.x, 0, 500 - player.width);
+    player.pos.y = clamp(player.pos.y, 0, 500 - player.height);
 
     player.pos = lerpPos(player.prevPos, player.destPos, player.alpha);
 
@@ -128,6 +131,7 @@ var update = function update(data) {
       player.lastUpdate = updatePlayer.lastUpdate;
       player.prevPos = updatePlayer.prevPos;
       player.destPos = updatePlayer.destPos;
+      player.grounded = updatePlayer.grounded;
       player.alpha = 0.05;
 
       if (keys[i] !== hash) {
@@ -164,11 +168,17 @@ var init = function init() {
   // event listeners
   window.addEventListener('keydown', function (e) {
     // console.log(`keydown: ${e.keyCode}`);
+
+    // prevent spacebar's scroll down function
+    if (e.keyCode === myKeys.KEYBOARD.KEY_SPACE) e.preventDefault();
     myKeys.keydown[e.keyCode] = true;
   });
 
   window.addEventListener('keyup', function (e) {
     // console.log(`keyup: ${e.keyCode}`);
+
+    // prevent spacebar's scroll down function
+    if (e.keyCode === myKeys.KEYBOARD.KEY_SPACE) e.preventDefault();
     myKeys.keydown[e.keyCode] = false;
   });
 };
