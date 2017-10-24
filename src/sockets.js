@@ -45,7 +45,9 @@ const onMsg = (sock) => {
   socket.on('updatePlayer', (data) => {
     const room = rooms.room1;
 
-    room.players[socket.hash].update(data);
+    if (room && room.players[socket.hash]) {
+      room.players[socket.hash].update(data);
+    }
   });
 };
 
