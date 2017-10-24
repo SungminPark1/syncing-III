@@ -1,20 +1,39 @@
 const xxh = require('xxhashjs');
-const Player = require('./player.js');
+const Room = require('./room.js');
 
-const players = {};
+const rooms = {};
 
-const onJoined = (sock) => {
+const updateRoom = (room, io) => {
+  rooms[room].update();
+
+  const { players } = rooms[room];
+  io.sockets.in(room).emit('update', {
+    players,
+  });
+};
+
+const onJoined = (sock, io) => {
   const socket = sock;
 
   socket.on('join', () => {
     const hash = xxh.h32(`${socket.id}${new Date().getTime()}`, 0xCAFEBABE).toString(16);
 
     socket.join('room1');
+
+    // create room if it doesn't exist
+    if (!rooms.room1) {
+      rooms.room1 = new Room('room1');
+
+      rooms.room1.interval = setInterval(() => {
+        updateRoom('room1', io);
+      }, 1000 / 60);
+    }
+
     socket.hash = hash;
-    players[hash] = new Player(hash);
+    rooms.room1.addPlayer(hash);
 
     socket.emit('initData', {
-      players,
+      players: rooms.room1.players,
       hash,
     });
   });
@@ -24,18 +43,22 @@ const onMsg = (sock) => {
   const socket = sock;
 
   socket.on('updatePlayer', (data) => {
-    players[socket.hash].update(data);
+    const room = rooms.room1;
+
+    room.players[socket.hash].update(data);
   });
 };
 
 const onDisconnect = (sock, io) => {
   const socket = sock;
 
-  delete players[socket.hash];
+  if (rooms.room1) {
+    delete rooms.room1.players[socket.hash];
 
-  io.sockets.in('room1').emit('disconnect', socket.hash);
+    io.sockets.in('room1').emit('disconnect', socket.hash);
 
-  socket.leave('room1');
+    socket.leave('room1');
+  }
 };
 
 const handleSockets = (ioServer) => {

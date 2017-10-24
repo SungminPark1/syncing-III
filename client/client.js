@@ -37,22 +37,18 @@ const updateMovement = () => {
   if (myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true) {
     user.destPos.y += -2;
     updated = true;
-    console.log(user.destPos);
   }
   if (myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true) {
     user.destPos.x += -2;
     updated = true;
-    console.log(user.destPos);
   }
   if (myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true) {
     user.destPos.y += 2;
     updated = true;
-    console.log(user.destPos);
   }
   if (myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true) {
     user.destPos.x += 2;
     updated = true;
-  console.log(user.destPos);
   }
 
   // prevent player from going out of bound
@@ -61,8 +57,8 @@ const updateMovement = () => {
 
   user.alpha = 0.05;
 
-  // if this client's user moves, send to server to update server
-  if (updated === true) {
+  // if this client's user moves or is falling from gravity - send to server to update server
+  if (updated === true || !user.grounded) {
     socket.emit('updatePlayer', {
       pos: user.pos,
       prevPos: user.prevPos,
@@ -127,6 +123,10 @@ const update = (data) => {
       player.prevPos = updatePlayer.prevPos;
       player.destPos = updatePlayer.destPos;
       player.alpha = 0.05;
+
+      if (keys[i] !== hash) {
+        // console.log(player.alpha);
+      }
     }
   }
 };
