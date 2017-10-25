@@ -17,22 +17,31 @@ class Room {
     for (let i = 0; i < keys.length; i++) {
       const player = this.players[keys[i]];
 
-      if (!player.grounded) {
-        player.lastUpdate = new Date().getTime();
+      player.lastUpdate = new Date().getTime();
+
+      // if jumping or in the air 
+      if (!player.grounded || player.velocity < 0) {
         player.prevPos = player.pos;
 
         player.velocity.y += 0.1;
-        player.velocity.y = utils.clamp(player.velocity.y, -10, 4);
+        player.velocity.y = utils.clamp(player.velocity.y, -5, 3);
 
+        // temporarily let destPos y go beyond bound 
+        // prevents lerp slowing down when close to ground
         player.destPos.y += player.velocity.y;
 
-        if (player.pos.y >= 450) {
+        // when player pos is >= bottom and y velocity is >= 0 - set grounded to true
+        if (player.pos.y >= 450 && player.velocity.y >= 0) {
           player.grounded = true;
-          player.pos.y = 450;
-          player.prevPos.y = 450;
-          player.destPos.y = 450;
         }
+      } else {
+        // if the player isn't falling make sure their not out of bound
+        player.prevPos.y = utils.clamp(player.prevPos.y, 0, 450);
+        player.destPos.y = utils.clamp(player.destPos.y, 0, 450);
       }
+
+      player.prevPos.x = utils.clamp(player.prevPos.x, 0, 450);
+      player.destPos.x = utils.clamp(player.destPos.x, 0, 450);
     }
   }
 }

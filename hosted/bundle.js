@@ -41,9 +41,11 @@ var updateMovement = function updateMovement() {
   updated = false;
   jumped = false;
 
-  if (user.pos.y > 450) {
+  /*
+  if (user.pos.y >= 450) {
     console.log(user.pos.y, user.prevPos.y, user.destPos.y);
   }
+  */
 
   user.prevPos = user.pos;
 
@@ -56,6 +58,7 @@ var updateMovement = function updateMovement() {
     updated = true;
   }
   if (myKeys.keydown[myKeys.KEYBOARD.KEY_SPACE] && user.grounded) {
+    // console.log('hit');
     jumped = true;
     updated = true;
   }
@@ -137,10 +140,6 @@ var update = function update(data) {
       player.destPos = updatePlayer.destPos;
       player.grounded = updatePlayer.grounded;
       player.alpha = 0.05;
-
-      if (keys[i] !== hash) {
-        // console.log(player.alpha);
-      }
     }
   }
 };
