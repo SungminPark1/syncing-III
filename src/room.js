@@ -30,7 +30,7 @@ class Room {
           player.grounded = true;
           player.pos.y = 450;
           player.prevPos.y = 450;
-          player.destPos.y = utils.clamp(player.destPos.y, 0, 450);
+          player.destPos.y = 450;
         }
       }
     }
