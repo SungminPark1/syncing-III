@@ -28,6 +28,8 @@ class Room {
 
         if (player.pos.y >= 450) {
           player.grounded = true;
+          player.pos.y = 450;
+          player.prevPos.y = 450;
           player.destPos.y = utils.clamp(player.destPos.y, 0, 450);
         }
       }
