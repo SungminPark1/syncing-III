@@ -84,11 +84,11 @@ const drawPlayers = () => {
       // console.log(player.alpha);
     }
 
+    player.pos = lerpPos(player.prevPos, player.destPos, player.alpha);
+
     // prevent player from going out of bound
     player.pos.x = clamp(player.pos.x, 0, 500 - player.width);
     player.pos.y = clamp(player.pos.y, 0, 500 - player.height);
-
-    player.pos = lerpPos(player.prevPos, player.destPos, player.alpha);
 
     // ignores this clients object to draw it last
     if (keys[i] !== hash) {

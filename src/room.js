@@ -35,11 +35,12 @@ class Room {
           player.grounded = true;
         }
       } else {
-        // if the player isn't falling make sure their not out of bound
+        // prevent player from falling out of bound
         player.prevPos.y = utils.clamp(player.prevPos.y, 0, 450);
         player.destPos.y = utils.clamp(player.destPos.y, 0, 450);
       }
 
+      // prevent player from walking out of bound
       player.prevPos.x = utils.clamp(player.prevPos.x, 0, 450);
       player.destPos.x = utils.clamp(player.destPos.x, 0, 450);
     }
