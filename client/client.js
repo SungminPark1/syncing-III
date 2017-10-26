@@ -9,9 +9,6 @@ let jumped = false;
 let hash;
 let players = {};
 
-let now;
-let dt;
-
 // keyboard stuff
 const myKeys = {
   KEYBOARD: {
@@ -33,18 +30,14 @@ const lerpPos = (pos0, pos1, alpha) => ({
 });
 
 // move update to keydown? to remove request animation frame
-const updateMovement = (time) => {
+const updateMovement = () => {
   const user = players[hash];
   updated = false;
   jumped = false;
 
-  /*
   if (user.pos.y >= 450) {
     console.log(user.pos.y, user.prevPos.y, user.destPos.y);
   }
-  */
-
-  console.log(time);
 
   user.prevPos = user.pos;
 
@@ -108,11 +101,8 @@ const drawPlayers = () => {
   ctx.fillRect(user.pos.x, user.pos.y, user.width, user.height);
 };
 
-const draw = (time) => {
-  dt = time - now;
-  now = time;
-
-  updateMovement(dt);
+const draw = () => {
+  updateMovement();
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawPlayers();
@@ -125,7 +115,6 @@ const update = (data) => {
   // list of players hash from server
   const keys = Object.keys(data.players);
 
-  //console.log(data.dt);
   // loop through players to update
   for (let i = 0; i < keys.length; i++) {
     const player = players[keys[i]];
