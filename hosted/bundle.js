@@ -41,9 +41,7 @@ var updateMovement = function updateMovement() {
   updated = false;
   jumped = false;
 
-  if (user.pos.y >= 450) {
-    console.log(user.pos.y, user.prevPos.y, user.destPos.y);
-  }
+  console.log(user.pos.y, user.prevPos.y, user.destPos.y);
 
   user.prevPos = user.pos;
 
