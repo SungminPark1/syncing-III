@@ -35,7 +35,7 @@ const updateMovement = () => {
   updated = false;
   jumped = false;
 
-  console.log(user.pos.y, user.prevPos.y, user.destPos.y);
+  console.log(`${user.pos.y}, ${user.prevPos.y}, ${user.destPos.y}, ${user.alpha}`);
 
 
   user.prevPos = user.pos;
