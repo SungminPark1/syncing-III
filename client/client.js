@@ -9,6 +9,9 @@ let jumped = false;
 let hash;
 let players = {};
 
+let time = new Date().getTime();
+let dt;
+
 // keyboard stuff
 const myKeys = {
   KEYBOARD: {
@@ -35,7 +38,7 @@ const updateMovement = () => {
   updated = false;
   jumped = false;
 
-  console.log(`${user.pos.y}, ${user.prevPos.y}, ${user.destPos.y}, ${user.alpha}`);
+  // console.log(`${user.pos.y}, ${user.prevPos.y}, ${user.destPos.y}, ${user.alpha}`);
 
 
   user.prevPos = user.pos;
@@ -111,6 +114,13 @@ const draw = () => {
 
 // called when server sends update update user pos?
 const update = (data) => {
+  const now = new Date().getTime();
+
+  dt = now - time;
+  time = now;
+
+  console.log(dt);
+  
   // list of players hash from server
   const keys = Object.keys(data.players);
 
