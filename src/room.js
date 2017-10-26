@@ -5,6 +5,7 @@ class Room {
   constructor(roomName) {
     this.room = roomName;
     this.players = {};
+    this.time = new Date().getTime();
   }
 
   addPlayer(hash) {
@@ -12,12 +13,17 @@ class Room {
   }
 
   update() {
+    const now = new Date().getTime();
+
+    this.dt = (now - this.time);
+    this.time = now;
+
     const keys = Object.keys(this.players);
 
     for (let i = 0; i < keys.length; i++) {
       const player = this.players[keys[i]];
 
-      player.lastUpdate = new Date().getTime();
+      player.lastUpdate = now;
 
       // if jumping or in the air 
       if (!player.grounded || player.velocity < 0) {

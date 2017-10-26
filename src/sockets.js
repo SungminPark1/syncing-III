@@ -6,9 +6,10 @@ const rooms = {};
 const updateRoom = (room, io) => {
   rooms[room].update();
 
-  const { players } = rooms[room];
+  const { players, dt } = rooms[room];
   io.sockets.in(room).emit('update', {
     players,
+    dt,
   });
 };
 

@@ -117,6 +117,7 @@ const update = (data) => {
   // list of players hash from server
   const keys = Object.keys(data.players);
 
+  console.log(data.dt);
   // loop through players to update
   for (let i = 0; i < keys.length; i++) {
     const player = players[keys[i]];
