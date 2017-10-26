@@ -9,8 +9,8 @@ let jumped = false;
 let hash;
 let players = {};
 
-let time = new Date().getTime();
-let dt;
+// let time = new Date().getTime();
+// let dt;
 
 // keyboard stuff
 const myKeys = {
@@ -114,13 +114,15 @@ const draw = () => {
 
 // called when server sends update update user pos?
 const update = (data) => {
+  /*
   const now = new Date().getTime();
 
   dt = now - time;
   time = now;
 
   console.log(dt);
-  
+  */
+
   // list of players hash from server
   const keys = Object.keys(data.players);
 
