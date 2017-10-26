@@ -63,18 +63,18 @@ var updateMovement = function updateMovement() {
     updated = true;
   }
 
-  user.alpha = updated ? 0.05 : user.alpha;
+  user.alpha = 0.05;
 
   // if this client's user moves or is falling from gravity - send to server to update server
-  if (updated === true || !user.grounded) {
-    socket.emit('updatePlayer', {
-      pos: user.pos,
-      prevPos: user.prevPos,
-      destPos: user.destPos,
-      alpha: user.alpha,
-      jump: jumped
-    });
-  }
+  // if (updated === true || !user.grounded) {
+  socket.emit('updatePlayer', {
+    pos: user.pos,
+    prevPos: user.prevPos,
+    destPos: user.destPos,
+    alpha: user.alpha,
+    jump: jumped
+  });
+  // }
 };
 
 // draw players
